@@ -5,10 +5,10 @@
 }
 
 :root {
-    --ink: #1c1917;
-    --paper: #faf6f0;
-    --accent: #d95d39;
-    --accent-dark: #a8442a;
+    --ink: #1a1a1a;
+    --paper: #f7f7f7;
+    --accent: #1e1861;
+    --accent-dark: #2a37a8;
     --line: #e3d9c9;
     --text-muted: #6b6459;
     --radius: 4px;
@@ -18,15 +18,15 @@ body {
     font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--ink);
     background-color: var(--paper);
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 h1, .brand {
-    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-family: "Poppins", -apple-system, sans-serif;
 }
 
 .container {
-    max-width: 960px;
+    max-width: 1080px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
@@ -35,7 +35,11 @@ h1, .brand {
     border-bottom: 1px solid var(--line);
 }
 
-.site-header .container {
+.container-nomargin {
+    max-width:none;
+}
+
+.site-header .container-nomargin {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -66,7 +70,7 @@ h1, .brand {
 
 .hero-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
     grid-template-areas:
         "identity photo"
         "details  photo";
@@ -276,4 +280,68 @@ h1, .brand {
     object-fit: cover;
     border-radius: var(--radius);
     border: 3px solid var(--ink);
+}
+
+/* BAGIAN EXPERIENCE (TUGAS 1) */
+
+.experience {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 4rem, 0rem, 4rem;
+}
+
+.experience .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+}
+
+.experience .section-subtitle {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.experience-list {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.experience-list li {
+    list-style: none;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.experience-item {
+    position: relative;
+    background-color:#a8a6a6;
+    padding: 2rem 2rem 2rem;
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+}
+
+.company {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.company-logo {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+
+
+.timeline {
+    position: relative
 }
