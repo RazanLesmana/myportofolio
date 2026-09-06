@@ -11,6 +11,7 @@
     --accent-dark: #2a37a8;
     --line: #e3d9c9;
     --text-muted: #6b6459;
+    --text-less-muted: #36322c;
     --radius: 4px;
 }
 
@@ -69,27 +70,17 @@ h1, .brand {
     font-size: 0.8rem;
 }
 
-.social-links {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
+.social-links { display: flex; gap: 1.25rem; align-items: center; margin-top:32px; }
 .social-link {
-    display: inline-block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    color: var(--paper);
-    background-color: var(--ink);
-    border-radius: var(--radius);
-    padding: 0.5rem 1.1rem;
-    transition: background-color 0.2s ease;
+    color: #000000b3;
+    display: inline-flex;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
-
 .social-link:hover {
-    background-color: var(--accent);
+    color: #11005d;
+    transform: scale(1.15);
 }
+.social-link svg { display: block; }
 
 .hero-photo {
     grid-area: photo;
@@ -120,7 +111,7 @@ h1, .brand {
 }
 
 .hero {
-    padding: 8rem 0 8rem;
+    padding: 10rem 0 12rem;
 }
 
 .hero-grid {
@@ -146,24 +137,26 @@ h1, .brand {
     text-transform: uppercase;
     color: var(--accent-dark);
     font-weight: 700;
-    margin-bottom: 0.6rem;
-    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+    margin-top: 2.5rem;
 }
 
 .hero-identity h1 {
     font-size: clamp(3rem, 7vw, 4rem);
-    line-height: 0.95;
+    line-height: 1;
+    margin-left: -0.3rem; 
 }
 
 .bio {
     color: var(--text-muted);
-    max-width: 420px;
-    margin-bottom: 0.2rem;
+    max-width: 430px;
+    margin-bottom: 0.75rem;
 }
 
 .meta-list {
     display: flex;
-    flex-direction:column;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .meta-row {
@@ -172,38 +165,10 @@ h1, .brand {
     gap: 4px;
 }
 
-.meta-row dt {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-muted);
-    margin-bottom: 0.15rem;
-}
 
 .meta-row dd {
     font-weight: 600;
-}
-
-.social-links {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.social-link {
-    display: inline-block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    color: var(--paper);
-    background-color: var(--ink);
-    border-radius: var(--radius);
-    padding: 0.5rem 1.1rem;
-    transition: background-color 0.2s ease;
-}
-
-.social-link:hover {
-    background-color: var(--accent);
+    margin: 0;
 }
 
 .hero-photo {
@@ -291,47 +256,137 @@ h1, .brand {
     margin-bottom: 2.5rem;
 }
 
-.experience-list {
+.timeline {
     position: relative;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    margin-top: 3rem; /* jarak dari subtitle "Where I've worked" */
+    margin-bottom:6rem;
 }
 
-.experience-list li {
-    list-style: none;
-    position: relative;
-    padding-left: 1.5rem;
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--line);
+    background-color: #11005d;
 }
 
-.experience-item {
-    position: relative;
-    background-color:#a8a6a6;
-    padding: 2rem 2rem 2rem;
-    width: 100%;
-    border-radius: 12px;
-    margin-bottom: 3rem;
+.timeline-item:last-child .timeline-marker::after {
+    content: '';
+    position: absolute;
+    top: 56px;           
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 40vh;      
+    background: var(--paper);
 }
 
-.company {
+.timeline-item {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    width: 56px;
+    height: 56px;
+    border-radius:20%;
+    background: white;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    outline:#1a1a1a;
+    box-shadow: -2px 2px 8px rgba(0,0,0,.3);
+}
+
+.timeline-marker .company-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 0;
 }
 
 .company-logo {
-    position: absolute;
     top: 1.5rem;
     right: 1.5rem;
-    
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    object-fit: contain;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    object-fit: scale-down; 
 }
 
+.experience-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0, .15)
+}
 
+.company-name {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.role-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.role {
+    display: flex;
+    flex-direction: column;
+}
+
+.role h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.role-year {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted)
+}
+
+.role-description {
+    list-style-type: disc;
+    font-size: 0.8rem;
+    color: var(--text-less-mutedmuted);
+    padding-left: 1rem;
+}
 
 .timeline {
     position: relative
+}
+
+.achievements .section-title {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 8rem;
+}
+
+.projects .section-title {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 8rem;
+}
+
+.contact-me section-title {
+    text-align: center;
+    font-size: 2.5rem;
 }
