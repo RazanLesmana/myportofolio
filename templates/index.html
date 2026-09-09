@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Razan - Portfolio</title>
+    <title>{{ name }} - Portofolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -13,9 +13,10 @@
 <body>
     <header class="site-header">
         <div class="container-nomargin">
-            <a href="#profile" class="brand">Razan Lesmana</a>
+            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
             <nav>
-                <a href="#profile">Profile</a>
+                <a href="{% url 'main:show_main' %}">Profile</a>
+                <a href="{% url 'main:show_experience' %}">Experience</a>
             </nav>
         </div>
     </header>
@@ -25,13 +26,13 @@
             <div class="container hero-grid">
                 <div class="hero-identity">
                     <p class="hero-kicker">Information System &middot; Universitas Indonesia</p>
-                    <h1>Razan Lesmana</h1>
+                    <h1>{{ name }}</h1>
                     <dl class="meta-list">
                         <div class="meta-row">
-                            <dd>Program S1 Sistem Informasi | NPM 2506603646</dd>
+                            <dd>{{ study_program }} | NPM {{ npm }}</dd>
                         </div>
                     </dl>
-                    <p class="bio">2nd year Information System student at Universitas Indonesia. Passionate about business, tech, and consulting. Open to explore business competitions and Hackathons</p>
+                    <p class="bio">{{ bio }}</p>
                     <div class="social-links">
                         <a href="https://github.com/RazanLesmana" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
                             <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
@@ -98,7 +99,7 @@
                             </div>
                             <ul class="role-list">
                                 <li class="role">
-                                    <h4 class="role-title">Project Leader of RISTEK Hackathon 2026</h4>
+                                    <h4 class="role-title-ristek">Project Leader of RISTEK Hackathon 2026</h4>
                                     <p class="role-year">jul 2026 - aug 2026</p>
                                     <ul class="role-description">
                                         <li>Lead Coordination between RISTEK Committee, managing directors, and Fasilkom UI's Division of Research and Innvation</li>
@@ -106,7 +107,7 @@
                                     </ul>
                                 </li>
                                 <li class="role">
-                                    <h4 class="role-title">Special project Consulting Analyst</h4>
+                                    <h4 class="role-title-ristek">Special project Consulting Analyst</h4>
                                     <p class="role-year">jul 2026 - present</p>
                                     <ul class="role-description">
                                         <li>Contributed in 3 consulting deck building</li>
@@ -114,7 +115,7 @@
                                     </ul>
                                 </li>
                                 <li class="role">
-                                    <h4 class="role-title">Business Growth and Partnership Associate</h4>
+                                    <h4 class="role-title-ristek">Business Growth and Partnership Associate</h4>
                                     <p class="role-year">Aug 2025 - present</p>
                                     <ul class="role-description">
                                         <li>Worked with big companies: OpenAI, OpenClaw, etc.</li>
@@ -136,7 +137,7 @@
                             </div>
                             <ul class="role-list">
                                 <li class="role">
-                                    <h4 class="role-title">Competition Analyst of GBECC 2026</h4>
+                                    <h4 class="role-title-gbecc">Competition Analyst of GBECC 2026</h4>
                                     <p class="role-year">jun 2026 - current</p>
                                     <ul class="role-description">
                                         <li>Managing competition flow, specifically on judge's scoring</li>
@@ -157,7 +158,7 @@
                             </div>
                             <ul class="role-list">
                                 <li class="role">
-                                    <h4 class="role-title">Vice President</h4>
+                                    <h4 class="role-title-osis">Vice President</h4>
                                     <p class="role-year">Feb 2023 - Feb 2024</p>
                                     <ul class="role-description">
                                         <li>Managed 89 student council member, delivering 30+ work programs</li>
@@ -197,6 +198,9 @@
                 <h1>Achievements</h1>
                 <p>Achievement Section Coming Soon!</p>
             </div>
+            <div class="bigbox">
+                
+            </div>
         </section>
         <section class="projects">
             <div class="section-title">
@@ -211,11 +215,10 @@
             </div>
         </section>
     </main>
-    <!--buat deploy-->
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2026 Burhan. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>
     </footer>
 </body>
