@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outside Work - {{ name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container-nomargin">
+            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
+            <nav>
+                <a href="{% url 'main:show_main' %}">Profile</a>
+                <a href="{% url 'main:show_experience' %}">Experience</a>
+                <a href="{% url 'main:show_outside_work' %}">Outside Work</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <section class="ow-hero">
+            {% if hero_photo %}
+            <img class="ow-hero-img" src="{% static hero_photo.image_path %}" alt="{{ hero_photo.title }}">
+            {% endif %}
+            <div class="ow-hero-overlay">
+                <div class="container">
+                    <p class="section-kicker">Outside Work</p>
+                    <h1>Photography, travel, and runs</h1>
+                </div>
+            </div>
+        </section>
+
+        <section class="ow-section" id="photography">
+            <div class="container">
+                <h2 class="ow-section-title">Photography</h2>
+
+                <!--tampilin foto-->
+                {% regroup photography_photos by album as album_list %}
+                {% for album in album_list %}
+                <h3 class="ow-album">{{ album.grouper }}</h3>
+                <div class="ow-gallery">
+                    {% for photo in album.list %}
+                        <img class="ow-photo" src="{% static photo.image_path %}" alt="{{ photo.title }}">
+                    {% endfor %}
+                </div>
+            {% empty %}
+                <p class="empty-state">Photos coming soon!</p>
+            {% endfor %}
+            </div>
+        </section>
+
+        <section class="ow-section" id="travel">
+            <div class="container">
+                <h2 class="ow-section-title">Travel</h2>
+
+                <!--tampilin travel items-->
+                <div class="ow-gallery">
+                    {% for photo in travel_photos %}
+                        <figure class="ow-photo-captioned">
+                            <img src="{% static photo.image_path %}" alt="{{ photo.title}}">
+                            <figcaption>{{ photo.title }}</figcaption>
+                        </figure>
+                    {% empty %}
+                        <p class="empty-state">Travel coming soon!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="ow-section" id="runs">
+            <div class="container">
+                <h2 class="ow-section-title">Runs</h2>
+
+                <!--tampilin runs items-->
+                <div class="ow-gallery">
+                    {% for photo in runs_photos %}
+                        <figure class="ow-photo-captioned">
+                            <img src="{% static photo.image_path %}" alt="{{ photo.title }}">
+                            <figcaption>{{ photo.title }}</figcaption>
+                        </figure>
+                    {% empty %}
+                        <p class="empty-state">Coming soon.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+        </div>
+    </footer>
+</body>
+</html>
