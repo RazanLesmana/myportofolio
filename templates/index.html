@@ -79,121 +79,45 @@
                         </div>
                     </div>
                 </div>
-                <div class="hero-details">
                 </div>
             </div>
         </section>
 
-        <section class="experience" id=""experience">
+        <section class="experience" id="experience">
             <div class="container">
                 <h2 class="section-title">Experiences</h2>
                 <p class="section-subtitle">Where I've worked</p>
 
-                <!--========== Start of Experience List ==========-->
-                <!--container buat experience blocks + garis timeline-->
-                <div class="timeline"> 
-                    <div class ="timeline-item"> <!--grid timeline | cards-->
-                        <div class="timeline-marker">
-                            <img src="/static/img/ristek.webp" alt="Logo RISTEK Fasilkom UI" class="company-logo">
-                        </div>
-                        <div class="experience-card">
-                            <div class="company">
-                                <h3 class="company-name">RISTEK Fasilkom UI</h3>
+                <div class="timeline">
+                    {% regroup featured_experiences by company as company_list %}
+                    {% for company in company_list %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                {% if company.list.0.company_logo %}
+                                    <img src="{% static company.list.0.company_logo %}"
+                                        alt="Logo {{ company.grouper }}" class="company-logo">
+                                {% endif %}
                             </div>
-                            <ul class="role-list">
-                                <li class="role">
-                                    <h4 class="role-title-ristek">Project Leader of RISTEK Hackathon 2026</h4>
-                                    <p class="role-year">jul 2026 - aug 2026</p>
-                                    <ul class="role-description">
-                                        <li>Lead Coordination between RISTEK Committee, managing directors, and Fasilkom UI's Division of Research and Innvation</li>
-                                        <li>Gained 40+ team participations across Universitas Indonesia Student</li>
-                                    </ul>
-                                </li>
-                                <li class="role">
-                                    <h4 class="role-title-ristek">Special project Consulting Analyst</h4>
-                                    <p class="role-year">jul 2026 - present</p>
-                                    <ul class="role-description">
-                                        <li>Contributed in 3 consulting deck building</li>
-                                        <li>Worked for Veritask AI, an AI-powered legal-tech platform accelerating legal research and productivity in Indonesia</li>
-                                    </ul>
-                                </li>
-                                <li class="role">
-                                    <h4 class="role-title-ristek">Business Growth and Partnership Associate</h4>
-                                    <p class="role-year">Aug 2025 - present</p>
-                                    <ul class="role-description">
-                                        <li>Worked with big companies: OpenAI, OpenClaw, etc.</li>
-                                        <li>Achieved best Member of Quarter 1 2025</li>
-                                        <li>Achieved Most Outstanding SIG for Quarter 1 2025</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class ="timeline-item"> <!--grid timeline | cards-->
-                        <div class="timeline-marker">
-                            <img src="/static/img/180dc.jpg" alt="Logo 180DC UI" class="company-logo">
-                        </div>
-                        <div class="experience-card">
-                            <div class="company">
-                                <h3 class="company-name">180 Degrees Consulting UI</h3>
+                            <div class="timeline-card">
+                                <div class="company">
+                                    <h3 class="company-name">{{ company.grouper }}</h3>
+                                </div>
+                                <ul class="role-list">
+                                    {% for role in company.list %}
+                                        <li class="role">
+                                            <h4>{{ role.title }}</h4>
+                                            <p class="role-year">{{ role.period }}</p>
+                                            <p class="role-description">{{ role.description }}</p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
                             </div>
-                            <ul class="role-list">
-                                <li class="role">
-                                    <h4 class="role-title-gbecc">Competition Analyst of GBECC 2026</h4>
-                                    <p class="role-year">jun 2026 - current</p>
-                                    <ul class="role-description">
-                                        <li>Managing competition flow, specifically on judge's scoring</li>
-                                        <li>Crowd Control at GBECC 2026 Talkshow</li>
-                                    </ul>
-                                </li>
-                            </ul>
                         </div>
-                    </div>
-
-                    <div class ="timeline-item"> <!--grid timeline | cards-->
-                        <div class="timeline-marker">
-                            <img src="/static/img/sman5.jpg" alt="Logo OSIS SMAN 5 Bekasi" class="company-logo">
-                        </div>
-                        <div class="experience-card">
-                            <div class="company">
-                                <h3 class="company-name">OSIS SMA Negeri 5 Kota Bekasi</h3>
-                            </div>
-                            <ul class="role-list">
-                                <li class="role">
-                                    <h4 class="role-title-osis">Vice President</h4>
-                                    <p class="role-year">Feb 2023 - Feb 2024</p>
-                                    <ul class="role-description">
-                                        <li>Managed 89 student council member, delivering 30+ work programs</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class ="timeline-item"> <!--grid timeline | cards-->
-                        <div class="timeline-marker">
-                            <img src="/static/img/Festifive.jpg" alt="Logo FESTIFIVE" class="company-logo">
-                        </div>
-                        <div class="experience-card">
-                            <div class="company">
-                                <h3 class="company-name">FESTIFIVE 2023</h3>
-                            </div>
-                            <ul class="role-list">
-                                <li class="role">
-                                    <h4 class="role-title">Project Officer</h4>
-                                    <p class="role-year">Feb 2023 - Sep 2023</p>
-                                    <ul class="role-description">
-                                        <li>Lead a team of 100+ students to execute school's flagship program, gaining 2500+ participants across 36 competitions</li>
-                                        <li>Developed and lead funding strategy execution including sponsorship outreach to gain over IDR 400 Million</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    {% empty %}
+                        <p class="empty-state">Belum ada pengalaman yang ditambahkan.</p>
+                    {% endfor %}
                 </div>
             </div>
-            
         </section>
 
         <section class="achievements">
@@ -201,7 +125,6 @@
                 <h1>Achievements</h1>
                 <p>Achievement Section Coming Soon!</p>
             </div>
-            <div class="bigbox">
                 
             </div>
         </section>

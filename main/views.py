@@ -1,7 +1,5 @@
 from django.shortcuts import render
 
-from main.models import Experience
-
 from main.models import Experience, OutsidePhoto
 
 def show_main(request):
@@ -12,6 +10,7 @@ def show_main(request):
         "bio": (
             "Bridging problem and real solution through tech, exploring business & consulting, a leader at heart."
         ),
+        "featured_experiences": Experience.objects.filter(is_featured=True),
     }
     return render(request, "index.html", context)
 
