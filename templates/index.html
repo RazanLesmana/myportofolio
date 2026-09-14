@@ -83,6 +83,54 @@
             </div>
         </section>
 
+        <section class="projects" id="projects">
+            <div class="container">
+                <div class="projects-grid">
+
+                    <div class="projects-intro">
+                        <h2>Projects</h2>
+                        <p>I build digital solutions to real problems</p>
+                    </div>
+
+                    <div class="projects-carousel">
+                        <button class="carousel-btn carousel-prev" type="button" aria-label="Proyek sebelumnya">&#8592;</button>
+
+                        <div class="projects-track" id="projects-track">
+                            {% for project in featured_projects %}
+                                <article class="project-card">
+                                    <div class="project-media">
+                                        {% if project.image_path %}
+                                            <img src="{% static project.image_path %}" alt="{{ project.title }}">
+                                        {% endif %}
+                                        <span class="project-badge">{{ project.get_project_type_display }}</span>
+                                    </div>
+
+                                    <h3 class="project-title">{{ project.title }}</h3>
+                                    <p class="project-description">{{ project.description }}</p>
+
+                                    {% if project.link or project.link_2 %}
+                                        <p class="project-links">
+                                            {% if project.link %}
+                                                <a href="{{ project.link }}" target="_blank" rel="noopener">{{ project.link_label }}</a>
+                                            {% endif %}
+                                            {% if project.link_2 %}
+                                                <a href="{{ project.link_2 }}" target="_blank" rel="noopener">{{ project.link_2_label }}</a>
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
+                                </article>
+                            {% empty %}
+                                <p class="empty-state">Coming soon.</p>
+                            {% endfor %}
+                        </div>
+
+                        <button class="carousel-btn carousel-next" type="button" aria-label="Proyek berikutnya">&#8594;</button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         <section class="experience" id="experience">
             <div class="container">
                 <h2 class="section-title">Experiences</h2>
@@ -128,12 +176,7 @@
                 
             </div>
         </section>
-        <section class="projects">
-            <div class="section-title">
-                <h1>Projects</h1>
-                <p>Projects Section Coming Soon!</p>
-            </div>
-        </section>
+        
         <section class="contact-me">
             <div class="section-title">
                 <h1>Contact Me!</h1>
@@ -147,6 +190,7 @@
             <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>
     </footer>
+    <script src="{% static 'js/carousel.js' %}"></script>
 </body>
 </html
 

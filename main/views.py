@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from main.models import Experience, OutsidePhoto
+from main.models import Experience, OutsidePhoto, Project
 
 def show_main(request):
     context = {
@@ -11,6 +11,7 @@ def show_main(request):
             "Bridging problem and real solution through tech, exploring business & consulting, a leader at heart."
         ),
         "featured_experiences": Experience.objects.filter(is_featured=True),
+        "featured_projects": Project.objects.filter(is_featured=True),
     }
     return render(request, "index.html", context)
 

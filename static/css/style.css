@@ -320,12 +320,6 @@ h1, .brand {
     margin-bottom: 8rem;
 }
 
-.projects .section-title {
-    text-align: center;
-    font-size: 1.2rem;
-    margin-bottom: 8rem;
-}
-
 /*Experience dari Tutor 2*/
 .experience-section {
  padding: 4rem 0;
@@ -500,3 +494,208 @@ h1, .brand {
     .ow-hero { height: 70vh; }
 }
 
+/* ===== Projects ===== */
+
+:root {
+    --pj-card-w: 88%;
+    --pj-track-h: 720px;
+    --pj-offset: 46%;
+    --pj-scale: 0.82;
+    --pj-tilt: 16deg;
+    --pj-ratio: 3 / 2;
+    --pj-intro-top: 220px;
+    --pj-card-pad: 1.25rem;
+    --pj-card-bg: #ffffff;
+    --pj-side-opacity: 0.22;
+    --pj-side-blur: 3px;
+}
+
+.projects {
+    padding: 5rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 2.4fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.projects-intro {
+    padding-top: var(--pj-intro-top);
+}
+
+.projects-intro h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.projects-intro p {
+    color: var(--text-muted);
+}
+
+.projects-carousel {
+    position: relative;
+    overflow: hidden;
+}
+
+.projects-track {
+    position: relative;
+    height: var(--pj-track-h);
+}
+
+.project-card {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: var(--pj-card-w);
+    padding: var(--pj-card-pad);
+    background-color: var(--pj-card-bg);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.10);
+    transform: translateX(-50%) scale(var(--pj-scale));
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    transition: transform 0.45s ease, opacity 0.45s ease, filter 0.45s ease;
+}
+
+.project-card.is-active {
+    transform: translateX(-50%) scale(1) rotateY(0deg);
+    opacity: 1;
+    filter: none;
+    pointer-events: auto;
+    z-index: 3;
+}
+
+.project-card.is-prev {
+    transform: translateX(calc(-50% - var(--pj-offset)))
+               perspective(1600px)
+               rotateY(var(--pj-tilt))
+               scale(var(--pj-scale));
+    opacity: var(--pj-side-opacity);
+    filter: blur(var(--pj-side-blur)) grayscale(60%);
+    z-index: 2;
+}
+
+.project-card.is-next {
+    transform: translateX(calc(-50% + var(--pj-offset)))
+               perspective(1600px)
+               rotateY(calc(var(--pj-tilt) * -1))
+               scale(var(--pj-scale));
+    opacity: var(--pj-side-opacity);
+    filter: blur(var(--pj-side-blur)) grayscale(60%);
+    z-index: 2;
+}
+
+.project-card > *:not(.project-media) {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card > *:not(.project-media) {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card.is-active > *:not(.project-media) {
+    opacity: 1;
+    transition-delay: 0.2s;
+}
+
+.project-media {
+    position: relative;
+    aspect-ratio: var(--pj-ratio);
+    background-color: #e8e8e8;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.project-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.project-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+}
+
+.project-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 0.75rem;
+}
+
+.project-description {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.project-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.project-links a {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-dark);
+    text-decoration: none;
+}
+
+.project-links a:hover {
+    text-decoration: underline;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 30%;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.carousel-prev { left: 0.5rem; }
+.carousel-next { right: 0.5rem; }
+
+.carousel-btn:disabled {
+    opacity: 0.25;
+    cursor: default;
+}
+
+@media (max-width: 900px) {
+    :root {
+        --pj-card-w: 88%;
+        --pj-track-h: 480px;
+        --pj-intro-top: 0;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
