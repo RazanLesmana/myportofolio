@@ -13,6 +13,16 @@
     --text-muted: #6b6459;
     --text-less-muted: #36322c;
     --radius: 4px;
+    --grid-size: 50px;
+    --grid-line: rgba(128, 128, 128, 0.07);
+    --dark-bg: #0a0a0a;
+    --dark-card: #1a1a1a;
+    --dark-text: #f2f2f2;
+    --dark-muted: rgba(255, 255, 255, 0.55);
+    --dark-line: rgba(255, 255, 255, 0.10);
+    --gold: #e0b44a;
+    --gold-deep: #8a6612;
+    --section-pad: 6rem;
 }
 
 body {
@@ -33,7 +43,12 @@ h1, .brand {
 }
 
 .site-header {
-    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 1rem;
+    z-index: 100;
+    margin-top: 1rem;
+    border-bottom: none;
+    background: transparent;
 }
 
 .container-nomargin {
@@ -42,9 +57,16 @@ h1, .brand {
 
 .site-header .container-nomargin {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1.25rem;
+    gap: 3rem;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0.85rem 2.5rem;
+    background-color: rgba(10, 10, 10, 0.8);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
 }
 
 .brand {
@@ -54,16 +76,31 @@ h1, .brand {
     text-decoration: none;
 }
 
+.site-header .brand {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
 .site-header nav {
     display: flex;
+    align-items: center;
     gap: 2rem;
 }
 
 .site-header nav a {
-    color: var(--ink);
-    font-weight: 500;
+    color: white;
     text-decoration: none;
+    font-weight: 500;
     font-size: 0.8rem;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+.site-header nav a:hover {
+    opacity: 0.65;
 }
 
 .social-links { display: flex; gap: 1.25rem; align-items: center; margin-top:32px; }
@@ -103,7 +140,7 @@ h1, .brand {
     font-size: 0.85rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--accent-dark);
+    color: var(--gold-deep);
     font-weight: 700;
     margin-bottom: 0.75rem;
     margin-top: 2.5rem;
@@ -190,10 +227,21 @@ h1, .brand {
 /* BAGIAN EXPERIENCE (TUGAS 1) */
 
 .experience {
-    width: 100%;
+    padding: var(--section-pad) 0;
+    background-color: var(--dark-bg);
+    background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+    color: var(--dark-text);
+}
+
+.experience .container {
     max-width: 1000px;
-    margin: 0 auto;
-    padding: 4rem 0rem 4rem;
+}
+
+.experience-section .section-kicker {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .experience .section-title {
@@ -219,8 +267,7 @@ h1, .brand {
     top: 0;
     bottom: 0;
     width: 3px;
-    background: var(--line);
-    background-color: #11005d;
+    background-color: white;
 }
 
 .timeline-item:last-child .timeline-marker::after {
@@ -230,8 +277,8 @@ h1, .brand {
     left: 50%;
     transform: translateX(-50%);
     width: 6px;
-    height: 40vh;      
-    background: var(--paper);
+    height: 38vh;      
+    background: var(--dark-bg);
 }
 
 .timeline-item {
@@ -267,10 +314,11 @@ h1, .brand {
 }
 
 .timeline-card {
-    background: white;
+    background: var(--dark-card);
+    color: var(--dark-text);
     border-radius: 12px;
     padding: 1.5rem 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0, .15)
+    box-shadow: none;
 }
 
 .company-name {
@@ -278,6 +326,7 @@ h1, .brand {
     text-transform: uppercase;
     font-weight: 700;
     margin-bottom: 1rem;
+    color: white;
 }
 
 .role-list {
@@ -299,31 +348,36 @@ h1, .brand {
 
 .role + .role {
     padding-top: 1rem;
-    border-top: 0.5px solid var(--line);
+    border-top: 0.5px solid var(--dark-line);
 }
 
 .role-year {
     font-size: 0.75rem;
     text-transform: uppercase;
-    color: var(--text-muted)
+    color: var(--dark-muted)
 }
 
 .role-description {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--dark-muted);
     margin-top: 0.5rem;
 }
 
 .achievements .section-title {
+    padding: var(--section-pad);
     text-align: center;
     font-size: 1.2rem;
-    margin-bottom: 8rem;
 }
 
 /*Experience dari Tutor 2*/
 .experience-section {
- padding: 4rem 0;
- border-top: 1px solid var(--line);
+    padding: 4rem 0;
+    background-color: var(--dark-bg);
+    background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+    color: var(--dark-text);
 }
 
 .section-kicker {
@@ -346,17 +400,19 @@ h1, .brand {
 }
 
 .experience-category {
- color: var(--accent-dark);
- font-size: 0.75rem;
- font-weight: 700;
- text-transform: uppercase;
+    color: var(--gold);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .experience-card {
     padding: 1.25rem;
-    background-color: #fff;
-    border: 1px solid var(--line);
+    background-color: var(--dark-card);
+    border: 1px solid var(--dark-line);
     border-radius: var(--radius);
+    color: var(--dark-text);
+    box-shadow: none;
 }
 
 .experience-card h2 {
@@ -497,13 +553,12 @@ h1, .brand {
 /* ===== Projects ===== */
 
 :root {
-    --pj-card-w: 88%;
-    --pj-track-h: 720px;
-    --pj-offset: 46%;
+    --pj-card-w: 60%;
+    --pj-track-h: 560px;
+    --pj-offset: 52%;
     --pj-scale: 0.82;
     --pj-tilt: 16deg;
     --pj-ratio: 3 / 2;
-    --pj-intro-top: 220px;
     --pj-card-pad: 1.25rem;
     --pj-card-bg: #ffffff;
     --pj-side-opacity: 0.22;
@@ -511,28 +566,28 @@ h1, .brand {
 }
 
 .projects {
-    padding: 5rem 0;
-    border-top: 1px solid var(--line);
+    padding: var(--section-pad) 0;
+    background-color: var(--dark-bg);
+    background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+    color: var(--dark-text);
 }
 
 .projects-grid {
-    display: grid;
-    grid-template-columns: 1fr 2.4fr;
-    gap: 3rem;
-    align-items: start;
+    display: block;
 }
 
 .projects-intro {
-    padding-top: var(--pj-intro-top);
+    text-align: center;
+    margin-bottom: 2.5rem;
 }
 
 .projects-intro h2 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-}
-
-.projects-intro p {
-    color: var(--text-muted);
+    color: #ffffff;
 }
 
 .projects-carousel {
@@ -637,6 +692,7 @@ h1, .brand {
     font-size: 1rem;
     font-weight: 700;
     margin-top: 0.75rem;
+    color:#1a1a1a;
 }
 
 .project-description {
@@ -691,11 +747,42 @@ h1, .brand {
     :root {
         --pj-card-w: 88%;
         --pj-track-h: 480px;
-        --pj-intro-top: 0;
     }
+}
 
     .projects-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
+
+/* Efek Wave */
+.experience,
+.projects {
+    position: relative;
+}
+
+.wave {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    display: block;
+    fill: var(--dark-bg);
+    pointer-events: none;
+}
+
+.wave-top {
+    top: -79px;
+}
+
+.wave-bottom {
+    bottom: -79px;
+    transform: scaleY(-1);
+}
+
+/* CONTACT ME */
+.contact-me {
+    padding: var(--section-pad);
+    align-items: center;
+    align-content: center;
 }
