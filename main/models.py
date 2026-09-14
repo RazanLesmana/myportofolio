@@ -55,4 +55,38 @@ class OutsidePhoto(models.Model):
 
     def __str__(self):
         return f"{self.album} - {self.title}"
+
+class Project(models.Model):
+    PROJECT_TYPE_CHOICES = [
+        ('case-competition', 'Case Competition'),
+        ('business-plan', 'Business Plan Competition'),
+        ('hackathon', 'Hackathon'),
+        ('personal', 'Personal Project'),
+        ('coursework', 'Coursework'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    project_type = models.CharField(
+        max_length=30,
+        choices=PROJECT_TYPE_CHOICES,
+        default='personal',
+    )
+    image_path = models.CharField(max_length=255, blank=True)
+
+    link = models.URLField(blank=True)
+    link_label = models.CharField(max_length=50, blank=True)
+    link_2 = models.URLField(blank=True)
+    link_2_label = models.CharField(max_length=50, blank=True)
+
+    is_featured = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
     
