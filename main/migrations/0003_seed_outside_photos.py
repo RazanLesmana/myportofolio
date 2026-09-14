@@ -40,3 +40,4 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(seed_photos, unseed_photos),
     ]
+    
