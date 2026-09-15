@@ -786,3 +786,290 @@ h1, .brand {
     align-items: center;
     align-content: center;
 }
+
+/* ============ Button system ============ */
+.button {
+    display: inline-block;
+    padding: 0.55rem 1.1rem;
+    border: 0;
+    border-radius: var(--radius);
+    background-color: var(--gold);
+    color: #1a1a1a;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.button:hover {
+    opacity: 0.85;
+}
+
+.button-secondary {
+    background-color: transparent;
+    color: var(--dark-text);
+    border: 1px solid var(--dark-line);
+}
+
+.button-danger {
+    background-color: #b42318;
+    color: #fff;
+}
+
+/* ============ Projects page ============ */
+.project-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.project-header h1 {
+    margin-bottom: 0;
+}
+
+.project-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    white-space: nowrap;
+}
+
+.project-add-button span {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.project-search {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.project-search__input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--dark-line);
+    border-radius: var(--radius);
+    background-color: var(--dark-card);
+    color: var(--dark-text);
+    font: inherit;
+}
+
+.project-search__input::placeholder {
+    color: var(--dark-muted);
+}
+
+.project-search__input:focus {
+    outline: 2px solid var(--gold);
+    border-color: var(--gold);
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.project-grid .experience-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+}
+
+.project-card-actions {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+}
+
+.project-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.project-actions .experience-status {
+    margin: 0;
+}
+
+/* ============ Delete modal ============ */
+.project-delete-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-delete-modal:popover-open {
+    display: flex;
+}
+
+.project-delete-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    cursor: default;
+}
+
+.project-delete-modal__content {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 480px);
+    padding: 1.75rem;
+    background-color: var(--dark-card);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-line);
+    border-radius: 12px;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+}
+
+.project-delete-modal__content h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.5rem;
+}
+
+.project-delete-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--dark-muted);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.project-delete-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* ============ Messages ============ */
+.messages {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+}
+
+.message {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+
+.message-success {
+    background-color: rgba(45, 140, 80, 0.18);
+    border: 1px solid rgba(45, 140, 80, 0.45);
+    color: #7ee2a8;
+}
+
+.message-error {
+    background-color: rgba(180, 35, 24, 0.18);
+    border: 1px solid rgba(180, 35, 24, 0.45);
+    color: #ffb4ab;
+}
+
+/* ============ Form page ============ */
+.project-form {
+    max-width: 640px;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--dark-line);
+    border-radius: var(--radius);
+    background-color: var(--dark-card);
+    color: var(--dark-text);
+    font: inherit;
+}
+
+.form-error {
+    color: #ffb4ab;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+
+.form-error ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 600px) {
+    .project-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .project-add-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .project-search {
+        flex-direction: column;
+    }
+
+    .project-search .button {
+        width: 100%;
+    }
+
+    .project-delete-modal__actions {
+        flex-direction: column-reverse;
+    }
+
+    .project-delete-modal__actions .button {
+        width: 100%;
+        text-align: center;
+    }
+}
