@@ -9,21 +9,21 @@
 </p>
 
 <div id="delete-project-{{ project.id }}"
-     class="project-delete-modal"
+     class="delete-modal"
      popover="auto"
      role="dialog"
      aria-modal="true"
      aria-labelledby="delete-project-title-{{ project.id }}">
 
     <button type="button"
-            class="project-delete-modal__backdrop"
+            class="delete-modal__backdrop"
             popovertarget="delete-project-{{ project.id }}"
             popovertargetaction="hide"
             aria-label="Tutup konfirmasi hapus"></button>
 
-    <div class="project-delete-modal__content">
+    <div class="delete-modal__content">
         <button type="button"
-                class="project-delete-modal__close"
+                class="delete-modal__close"
                 popovertarget="delete-project-{{ project.id }}"
                 popovertargetaction="hide"
                 aria-label="Tutup konfirmasi hapus">&times;</button>
@@ -35,7 +35,7 @@
             <strong>{{ project.title }}</strong>?
         </p>
 
-        <div class="project-delete-modal__actions">
+        <div class="delete-modal__actions">
             <button type="button"
                     class="button button-secondary"
                     popovertarget="delete-project-{{ project.id }}"
