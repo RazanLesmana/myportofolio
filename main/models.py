@@ -18,7 +18,7 @@ class Experience(models.Model):
     description = models.TextField(blank=True)
     category = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES, default='volunteer')
     period = models.CharField(max_length=100, blank=True)
-    ended_at = models.DateTimeField(blank=True, null=True)
+    ended_at = models.CharField(max_length=50, blank=True)
 
     is_featured = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
@@ -31,7 +31,7 @@ class Experience(models.Model):
 
     @property
     def is_ongoing(self):
-        return self.ended_at is None
+        return not self.ended_at
 
 class OutsidePhoto(models.Model):
     SECTION_CHOICES = [

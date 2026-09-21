@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.core import serializers
 
 from main.models import Experience, OutsidePhoto, Project
-from main.forms import ProjectForm
+from main.forms import ExperienceForm, ProjectForm
 from django.contrib import messages
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -24,7 +24,7 @@ def show_main(request):
     return render(request, "index.html", context)
 
 
-def show_experience(request):
+def show_experiences(request):
     context = {
         "name": "Razan Lesmana",
         "experience_list": Experience.objects.all(),
@@ -71,36 +71,6 @@ def create_project(request):
     context = {"form": form, "name": "Razan Lesmana"}
     return render(request, "project_form.html", context)
 
-
-def show_xml(request):
-    project_list = Project.objects.all()
-    xml_data = serializers.serialize("xml", project_list)
-    return HttpResponse(xml_data, content_type="application/xml")
-
-
-def show_json(request):
-    project_list = Project.objects.all()
-    json_data = serializers.serialize("json", project_list)
-    return HttpResponse(json_data, content_type="application/json")
-
-
-def show_xml_by_id(request, project_id):
-    try:
-        project_item = Project.objects.filter(pk=project_id)
-        xml_data = serializers.serialize("xml", project_item)
-        return HttpResponse(xml_data, content_type="application/xml")
-    except Project.DoesNotExist:
-        return HttpResponse(status=404)
-
-
-def show_json_by_id(request, project_id):
-    try:
-        project_item = Project.objects.get(pk=project_id)
-        json_data = serializers.serialize("json", [project_item])
-        return HttpResponse(json_data, content_type="application/json")
-    except Project.DoesNotExist:
-        return HttpResponse(status=404)
-
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
     projects = Project.objects.all()
@@ -120,3 +90,53 @@ def delete_project(request, project_id):
         return redirect("main:show_projects")
 
     return redirect("main:show_projects")
+
+# ===== EXPERIENCE =====
+def show_experiences(request):
+    json_response = get_experiences_json(request)
+
+    experiences = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    experiences = [experience.object for experience in experiences]
+    title_query = request.GET.get("title", "").strip()
+
+    context = {
+        "name": "Razan Lesmana",
+        "experience_list": experiences,
+        "title_query": title_query,
+    }
+    return render(request, "experience.html", context)
+
+
+def create_experience(request):
+    form = ExperienceForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        messages.success(request, "Experience berhasil ditambahkan!")
+        return redirect("main:show_experiences")
+
+    context = {"form": form, "name": "Razan Lesmana"}
+    return render(request, "experience_form.html", context)
+
+def get_experiences_json(request):
+    title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.all()
+
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
+
+    experiences_json = serializers.serialize("json", experiences)
+    return HttpResponse(experiences_json, content_type="application/json")
+
+def delete_experience(request, experience_id):
+    project = get_object_or_404(Experience, pk=experience_id)
+
+    if request.method == "POST":
+        project.delete()
+        messages.success(request, "Experience berhasil dihapus!")
+        return redirect("main:show_experiences")
+
+    return redirect("main:show_experiences")
