@@ -87,6 +87,16 @@ Buka http://localhost:8000/
 - Mengubah view daftar agar mengambil data lewat JSON lalu melakukan deserialisasi
 - Mengubah field ended_at dari DateTimeField menjadi Charfield agar input sesuai dengan tampilan yang diinginkan
 
+### Minggu 4
+- Setup sesuai Tutorial 4 (registrasi, login, logout, cookie `last_login`)
+- Menambahkan relasi `ManyToManyField` ke `User` pada model `Experience` untuk fitur star
+- Membuat view `toggle_star_experience` dengan metode POST dan `{% csrf_token %}`, satu star per pengguna
+- Menampilkan jumlah star dan status star pengguna pada tiap kartu Experience
+- Menambahkan view `edit_experience` untuk mengubah data lewat form
+- Menerapkan pembatasan hak akses di sisi server pada create, update, dan delete Experience
+- Membuat peran **Editor** lewat Django Group dan memeriksanya dengan `user.groups.filter(name="Editor")`
+- Menyembunyikan tombol tambah, edit, dan hapus bagi pengguna yang tidak berhak
+- Memastikan endpoint JSON tetap berfungsi tanpa membocorkan data pengguna
 ---
 
 ## Pertanyaan Reflektif
@@ -153,22 +163,26 @@ Saya menggunakan AI untuk membantu memahami struktur kode Django dan syntax untu
 
 **Tools yang digunakan:** Claude
 
+## AI Disclosure
+
+Saya menggunakan AI untuk membantu memahami struktur kode Django dan syntax untuk perubahan yang ingin saya buat. Untuk menjamin pemahaman, saya tidak melakukan copy-paste kode secara buta, dan meminta AI menjelaskan tiap baris dari kode yang diberikan jika saya belum paham.
+
+**Tools yang digunakan:** Claude
+
 ### Strategi prompting
 
-Untuk Tugas 3 saya mengubah pendekatan di tengah jalan. Di awal saya masih meminta AI memberi kode per langkah seperti Tugas 2, tetapi setelah beberapa kali salah tempel berkas saya berhenti dan memutuskan menulis sendiri seluruh kodenya, lalu memakai AI hanya untuk menjelaskan konsep dan mengoreksi kesalahan saya.
+Untuk Tugas 4 saya mengunggah PDF tugasnya terlebih dahulu dan meminta AI dua hal secara berurutan: gambaran besar non-teknis tentang apa yang sebenarnya dibangun, lalu daftar langkah beserta estimasi waktu per langkah. Gambaran besarnya saya minta dalam bentuk tabel empat peran: pengunjung, pengguna biasa, editor, dan pemilik, beserta apa yang boleh dilakukan masing-masing, supaya saya paham dulu logika izinnya sebelum menyentuh kode.
 
-Jadi selama mengerjakan tugas 3, saya hanya menggunakan AI untuk mengoreksi kesalahan dan membantu mempercepat proses penggantian nama variable pada CSS.
-
-Konsep yang saya tanyakan sampai paham: perbedaan `Project`, `project`, dan `projects`; alasan `{% extends %}` membuang konten di luar `{% block %}` tanpa error; kenapa `serialize` lalu `deserialize` di satu view terlihat redundan tetapi tetap diminta; serta hubungan antara path URL, nama route, nama fungsi view, dan nama berkas template yang ternyata sama sekali tidak saling terikat.
+Setelah kerangkanya jelas, saya meminta kode per langkah dan memverifikasi tiap langkah dengan `python manage.py check` sebelum lanjut, bukan menumpuk semua perubahan lalu menjalankannya sekaligus.
 
 ### Batasan AI
 
-1. **Menebak isi tutorial sebelum membacanya.** Di awal AI langsung mengimplementasikan empat view data delivery (`show_xml`, `show_json`, `show_xml_by_id`, `show_json_by_id`) berdasarkan asumsi pola PBP tahun sebelumnya. Setelah PDF Tutorial 3 benar-benar dibaca, ternyata yang diminta adalah satu endpoint `get_projects_json` dengan filter `?title=`. Keempat view tersebut harus saya hapus karena tidak diminta dan menduplikasi fungsi yang sudah ada.
+1. **AI tidak tahu kondisi kode saya yang sebenarnya.** AI menuliskan pemeriksaan hak akses untuk view `edit_experience`, padahal view itu belum pernah saya buat. AI baru tahu setelah saya mengirim isi `main/views.py`. Ini pola yang sama dengan Tugas 3: AI menyusun rencana berdasarkan asumsi, bukan berdasarkan berkas yang ada.
 
-2. **Instruksi yang ambigu merusak tampilan.** Saat membuat komponen modal hapus untuk Experience, AI menyuruh saya "salin polanya, ganti semua `project` jadi `experience`". Saya ikuti, termasuk mengganti nama class CSS-nya, sehingga `class="project-delete-modal"` berubah dan tidak ada aturan CSS yang cocok — modalnya muncul tanpa gaya sama sekali. AI baru menjelaskan bahwa nama class CSS adalah nama gaya, bukan nama data, dan tidak boleh ikut diganti, setelah saya mengeluh tampilannya jelek.
+2. **Instruksi "ganti seluruh blok" menghapus kode yang masih dipakai.** AI menyuruh saya mengganti seluruh bagian Experience di `main/views.py`. Saya ikuti, dan fungsi `register`, `login_user`, serta `user_logout` ikut terhapus — baru ketahuan lewat `ImportError` saat menjalankan `python manage.py check`. Instruksi berbasis rentang teks seperti ini rapuh karena AI tidak melihat berkas saya secara langsung.
 
-Kesimpulan saya: pola kegagalan AI di Tugas 3 sama dengan Tugas 2, yaitu menebak sebelum punya informasi yang cukup, tapi kali ini yang ditebak bukan bug, melainkan isi instruksi tugas. Karena itu saya belajar memaksa AI membaca sumber aslinya dulu, dan memverifikasi setiap klaimnya lewat perintah yang menampilkan kondisi berkas apa adanya, bukan lewat deskripsi.
+3. **AI sempat mendefinisikan fungsi yang sama dua kali.** Saat memindahkan `show_experiences` ke versi baru, definisi lamanya tidak ikut dihapus. Karena Python memakai definisi terakhir, context `starred_ids` dan `is_editor` yang baru justru tidak terpakai sama sekali dan tombol star tidak akan berfungsi. Masalah ini hanya ketahuan karena saya mengirim seluruh isi berkas untuk diperiksa.
 
 ### Link prompt
 
-Sama seperti Tugas 2, saya menggunakan satu chat dari awal sampai akhir sehingga log lengkapnya bisa ditelusuri berurutan: https://claude.ai/cowork/cse_013MtGmYPeekJfgQk582XwLH
+Sama seperti Tugas 3, saya menggunakan satu chat dari awal sampai akhir sehingga log lengkapnya bisa ditelusuri berurutan: https://claude.ai/cowork/cse_013MtGmYPeekJfgQk582XwLH

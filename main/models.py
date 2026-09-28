@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 
 class Experience(models.Model):
     EXPERIENCE_CHOICES = [
@@ -22,6 +23,7 @@ class Experience(models.Model):
     ended_at = models.CharField(max_length=50, blank=True)
 
     is_featured = models.BooleanField(default=False)
+    stars = models.ManyToManyField(User, related_name="starred_experiences", blank=True)
     order = models.PositiveIntegerField(default=0)
 
     class Meta:

@@ -14,6 +14,7 @@ import datetime
 
 from django.contrib.auth.decorators import login_required  # Tambahkan baris ini
 from django.core.exceptions import PermissionDenied        # Tambahkan baris ini
+from django.views.decorators.http import require_POST
 
 
 def show_main(request):
@@ -32,14 +33,8 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
-
-def show_experiences(request):
-    context = {
-        "name": "Razan Lesmana",
-        "experience_list": Experience.objects.all(),
-    }
-    return render(request, "experience.html", context)
-
+def user_is_editor(user):
+    return user.groups.filter(name="Editor").exists()
 
 def show_outside_work(request):
     context = {
@@ -118,24 +113,21 @@ def show_experiences(request):
     experiences = [experience.object for experience in experiences]
     title_query = request.GET.get("title", "").strip()
 
+    starred_ids = []
+    if request.user.is_authenticated:
+        starred_ids = list(
+            request.user.starred_experiences.values_list("id", flat=True)
+        )
+
     context = {
         "name": "Razan Lesmana",
         "experience_list": experiences,
         "title_query": title_query,
+        "starred_ids": starred_ids,
+        "is_editor": request.user.is_authenticated and user_is_editor(request.user),
     }
     return render(request, "experience.html", context)
 
-
-def create_experience(request):
-    form = ExperienceForm(request.POST or None)
-
-    if form.is_valid() and request.method == "POST":
-        form.save()
-        messages.success(request, "Experience berhasil ditambahkan!")
-        return redirect("main:show_experiences")
-
-    context = {"form": form, "name": "Razan Lesmana"}
-    return render(request, "experience_form.html", context)
 
 def get_experiences_json(request):
     title_query = request.GET.get("title", "").strip()
@@ -147,17 +139,76 @@ def get_experiences_json(request):
     experiences_json = serializers.serialize("json", experiences)
     return HttpResponse(experiences_json, content_type="application/json")
 
+
+@login_required(login_url="/login/")
+def create_experience(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    form = ExperienceForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        messages.success(request, "Experience berhasil ditambahkan!")
+        return redirect("main:show_experiences")
+
+    context = {
+        "form": form,
+        "name": "Razan Lesmana",
+        "form_title": "Tambah Experience",
+    }
+    return render(request, "experience_form.html", context)
+
+
+@login_required(login_url="/login/")
+def edit_experience(request, experience_id):
+    if not (request.user.is_superuser or user_is_editor(request.user)):
+        raise PermissionDenied
+
+    experience = get_object_or_404(Experience, pk=experience_id)
+    form = ExperienceForm(request.POST or None, instance=experience)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        messages.success(request, "Experience berhasil diubah!")
+        return redirect("main:show_experiences")
+
+    context = {
+        "form": form,
+        "name": "Razan Lesmana",
+        "form_title": "Edit Experience",
+    }
+    return render(request, "experience_form.html", context)
+
+
+@login_required(login_url="/login/")
 def delete_experience(request, experience_id):
-    project = get_object_or_404(Experience, pk=experience_id)
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    experience = get_object_or_404(Experience, pk=experience_id)
 
     if request.method == "POST":
-        project.delete()
+        experience.delete()
         messages.success(request, "Experience berhasil dihapus!")
         return redirect("main:show_experiences")
 
     return redirect("main:show_experiences")
 
-def register(request): 
+
+@login_required(login_url="/login/")
+@require_POST
+def toggle_star_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+
+    if experience.stars.filter(pk=request.user.pk).exists():
+        experience.stars.remove(request.user)
+    else:
+        experience.stars.add(request.user)
+
+    return redirect("main:show_experiences")
+
+def register(request):
     form = UserCreationForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -169,7 +220,6 @@ def register(request):
         "name": "Razan Lesmana",
         "form": form,
     }
-
     return render(request, "register.html", context)
 
 def login_user(request):

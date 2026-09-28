@@ -13,7 +13,9 @@ from main.views import (
     register,
     login_user,
     user_logout,
-    toggle_star
+    toggle_star,
+    edit_experience,
+    toggle_star_experience,
 )
 
 app_name = "main"
@@ -33,4 +35,6 @@ urlpatterns = [
     path("login/", login_user, name="login"),
     path("logout/", user_logout, name="logout"),
     path("projects/<uuid:project_id>/star/", toggle_star, name="toggle_star"),
+        path("experience/<uuid:experience_id>/edit/", edit_experience, name="edit_experience"),
+    path("experience/<uuid:experience_id>/star/", toggle_star_experience, name="toggle_star_experience"),
 ]
