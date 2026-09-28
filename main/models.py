@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.contrib.auth.models import User 
 
 class Experience(models.Model):
     EXPERIENCE_CHOICES = [
@@ -83,6 +84,10 @@ class Project(models.Model):
 
     is_featured = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
+
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_projects", blank=True
+    )
 
     class Meta:
         ordering = ['order']
