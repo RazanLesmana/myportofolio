@@ -59,3 +59,18 @@ class ExperienceForm(ModelForm):
             "is_featured": "Tampilkan di halaman utama",
             "order": "Urutan Jabatan",
         }
+
+        def clean_title(self):
+            title = strip_tags(self.cleaned_data["title"]).strip()
+            if not title:
+                raise ValidationError("Jabatan tidak boleh hanya berisi tag HTML.")
+            return title
+
+        def clean_company(self):
+            return strip_tags(self.cleaned_data["company"]).strip()
+
+        def clean_description(self):
+            return strip_tags(self.cleaned_data["description"]).strip()
+
+        def clean_period(self):
+            return strip_tags(self.cleaned_data["period"]).strip()

@@ -99,6 +99,16 @@ Buka http://localhost:8000/
 - Memastikan endpoint JSON tetap berfungsi tanpa membocorkan data pengguna
 ---
 
+### Minggu 5
+- Setup sesuai Tutorial 5 (toast, AJAX, debouncing, modal, XSS)
+- Mengubah halaman Experience agar hanya merender kerangka, lalu mengambil data lewat `fetch()` dari endpoint JSON
+- Menyusun JSON secara manual di `get_experiences_json`, termasuk jumlah star dan status star pengguna yang sedang login
+- Menambahkan kondisi loading, kosong, dan error
+- Menambahkan pencarian berdasarkan jabatan dengan debouncing 300 ms
+- Memindahkan form tambah Experience ke dalam modal (Popover API) dan mengirimnya lewat AJAX ke `create_experience_ajax` (201/400/403)
+- Menampilkan toast untuk hasil berhasil dan gagal, termasuk pesan validasi dari server
+- Menerapkan `escapeHtml` pada semua teks yang disisipkan lewat JavaScript dan `strip_tags` pada `clean_<field>` di `ExperienceForm`
+
 ## Pertanyaan Reflektif
 
 ### Tugas 1
@@ -155,6 +165,22 @@ crsf_token digunakan untuk menghindari serangan CSRF dimana orang lain dapat men
 
 jadi, harus di-serialize dulu karena object Django adalah object Python yang tidak dapat langsung dikirim protokol HTTP. Oleh karena itu, serialization mengubah object itu jadi format teks standar (JSON) yang bisa dikirim lewat jaringan dan dibaca ulang oleh bahasa apapun
 
+
+### Tugas 5
+
+**1.** Debouncing = nunda fungsi sampai user berhenti ngetik sebentar.
+- Tiap ketikan: timer lama dibatalkan (`clearTimeout`), timer baru dipasang (`setTimeout` 300 ms).
+- Request baru dikirim kalau 300 ms lewat tanpa ketikan baru.
+- Penting karena tanpa debounce, tiap huruf = 1 request ("Django" = 6 request). Server jadi berat dan hasil lama bisa nimpa hasil baru.
+
+**2.** `await` = tunggu `fetch()` selesai dulu, baru lanjut ke baris berikutnya.
+- `fetch()` cuma ngasih Promise ("janji, hasilnya nyusul"), bukan data.
+- Tanpa `await`, variabelnya masih Promise yang belum selesai. `response.ok` jadi `undefined` dan `response.json()` error, karena datanya belum datang.
+
+**3.** XSS = penyerang nyelipin JavaScript ke halaman kita, lalu kode itu jalan di browser orang lain.
+- Template Django otomatis nge-escape `{{ variabel }}`, jadi tag HTML tampil sebagai teks biasa.
+- Lewat AJAX, data JSON dimasukin ke HTML pakai `innerHTML` tanpa escape otomatis, jadi browser bisa ngejalanin tag seperti `<img onerror="...">`.
+- Solusinya: `escapeHtml` di JavaScript + `strip_tags` di `clean_<field>` pada form.
 ---
 
 ## AI Disclosure
@@ -165,23 +191,21 @@ Saya menggunakan AI untuk membantu memahami struktur kode Django dan syntax untu
 
 ## AI Disclosure
 
-Saya menggunakan AI untuk membantu memahami struktur kode Django dan syntax untuk perubahan yang ingin saya buat. Untuk menjamin pemahaman, saya tidak melakukan copy-paste kode secara buta, dan meminta AI menjelaskan tiap baris dari kode yang diberikan jika saya belum paham.
+Saya menggunakan AI untuk memahami alur AJAX, debouncing, modal, dan perlindungan XSS, lalu menerapkannya ke halaman Experience. Sebagian kode template dan JavaScript saya salin dari AI karena waktu mendekati tenggat, dan akan saya kerjakan ulang sendiri sebagai persiapan kuis.
 
 **Tools yang digunakan:** Claude
 
 ### Strategi prompting
 
-Untuk Tugas 4 saya mengunggah PDF tugasnya terlebih dahulu dan meminta AI dua hal secara berurutan: gambaran besar non-teknis tentang apa yang sebenarnya dibangun, lalu daftar langkah beserta estimasi waktu per langkah. Gambaran besarnya saya minta dalam bentuk tabel empat peran: pengunjung, pengguna biasa, editor, dan pemilik, beserta apa yang boleh dilakukan masing-masing, supaya saya paham dulu logika izinnya sebelum menyentuh kode.
-
-Setelah kerangkanya jelas, saya meminta kode per langkah dan memverifikasi tiap langkah dengan `python manage.py check` sebelum lanjut, bukan menumpuk semua perubahan lalu menjalankannya sekaligus.
+- Mengunggah PDF Tutorial 5 dan Tugas 5, lalu meminta penjelasan alur besar dulu (browser ↔ server) sebelum masuk kode.
+- Meminta halaman belajar interaktif: tiap bagian berisi penjelasan cara kerja dan hubungan antarfile, pertanyaan yang harus saya jawab sendiri, baru kunci jawaban dan kode terbuka.
+- Mengirim isi `main/views.py`, `main/models.py`, `main/forms.py`, dan template saya supaya kode disesuaikan dengan proyek saya, bukan contoh tutorial.
+- Mengecek tiap perubahan dengan `python manage.py runserver` dan mengirim pesan error ke AI saat gagal.
 
 ### Batasan AI
 
-1. **AI tidak tahu kondisi kode saya yang sebenarnya.** AI menuliskan pemeriksaan hak akses untuk view `edit_experience`, padahal view itu belum pernah saya buat. AI baru tahu setelah saya mengirim isi `main/views.py`. Ini pola yang sama dengan Tugas 3: AI menyusun rencana berdasarkan asumsi, bukan berdasarkan berkas yang ada.
-
-2. **Instruksi "ganti seluruh blok" menghapus kode yang masih dipakai.** AI menyuruh saya mengganti seluruh bagian Experience di `main/views.py`. Saya ikuti, dan fungsi `register`, `login_user`, serta `user_logout` ikut terhapus — baru ketahuan lewat `ImportError` saat menjalankan `python manage.py check`. Instruksi berbasis rentang teks seperti ini rapuh karena AI tidak melihat berkas saya secara langsung.
-
-3. **AI sempat mendefinisikan fungsi yang sama dua kali.** Saat memindahkan `show_experiences` ke versi baru, definisi lamanya tidak ikut dihapus. Karena Python memakai definisi terakhir, context `starred_ids` dan `is_editor` yang baru justru tidak terpakai sama sekali dan tombol star tidak akan berfungsi. Masalah ini hanya ketahuan karena saya mengirim seluruh isi berkas untuk diperiksa.
+1. **AI tidak tahu ketergantungan di kode saya.** `show_experiences` lama memanggil `get_experiences_json` lalu melakukan deserialisasi, sehingga perubahan format JSON akan membuat halaman crash. Ini baru ketahuan setelah saya mengirim isi `main/views.py`.
+2. **Kode yang benar tetap bisa salah saat ditempel.** Saya sempat menaruh method `clean_*` di `main/models.py` (seharusnya di `main/forms.py`) dan membuat `return` masuk ke dalam loop di `get_experiences_json`. Keduanya saya perbaiki manual setelah melihat warning editor dan error server.
 
 ### Link prompt
 
