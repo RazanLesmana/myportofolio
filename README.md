@@ -15,7 +15,7 @@ Website portofolio pribadi ini menampilkan profil, pengalaman, penghargaan, proy
 
 Proyek ini dibangun dengan Django sebagai fullstack framework (menangani routing, tempating, dan (nanti?) persistence). Tampilan dibangun manual dengan HTML + CSS.
 
-**Status saat ini:** Selesai Tugas 1
+**Status saat ini:** Implementasi lokal Tutorial 7 (Django REST Framework)
 
 ---
 
@@ -110,6 +110,39 @@ Buka http://localhost:8000/
 - Menerapkan `escapeHtml` pada semua teks yang disisipkan lewat JavaScript dan `strip_tags` pada `clean_<field>` di `ExperienceForm`
 
 ## Pertanyaan Reflektif
+
+### Tutorial 7 — Django REST Framework
+
+- Django `~=5.2` dan DRF `~=3.18.3`; tidak ada perubahan model atau migrasi baru.
+- API Projects: `/api/v1/projects/`, `/api/v1/projects/<uuid>/`, dan `/api/v1/projects/<uuid>/star/`.
+- API Experience: `/api/v1/experiences/`, `/api/v1/experiences/<uuid>/`, dan `/api/v1/experiences/<uuid>/star/`.
+- List/detail menerima GET (publik), list menerima POST (pemilik), detail menerima PUT/PATCH/DELETE (pemilik). Star menerima POST dari pengguna login.
+- Editor boleh PUT/PATCH Experience, tetapi tidak boleh membuat/menghapus Experience atau mengelola Projects. `is_staff` saja tidak memberikan hak mengelola API.
+- Autentikasi memakai session Django dan CSRF. Field ID, star, serta nilai hasil perhitungan hanya dapat dibaca; akun pemberi star berasal dari session.
+- Kedua halaman memakai JSON datar (`id`, `title`, dst.), pencarian `?title=...`, debounce 300 ms, pembatalan request lama, modal tambah, toast, dan AJAX star/hapus. Form edit Experience lama tetap berfungsi untuk pemilik dan Editor.
+- Teks kartu di-escape dan URL kartu dibatasi ke HTTP/HTTPS. Validasi serializer membersihkan tag pada teks; validasi form Experience lama juga diperbaiki.
+
+**Penyesuaian terhadap contoh PDF:** Model Project yang sudah ada dipertahankan: `link`/`link_2` menggantikan `project_url`, `image_path` menghasilkan `image_url` melalui static storage, dan `project_type`/`project_type_display` dipakai sebagai kategori (tidak menambahkan `tech_stack` fiktif). Deskripsi memang opsional pada model ini; PUT wajib menyertakan `title`. Relasi star Experience bernama `stars`, sedangkan Project memakai `starred_by`. Endpoint JSON lama tetap tersedia untuk kompatibilitas.
+
+**Verifikasi lokal:**
+
+```bash
+python manage.py check
+python manage.py makemigrations --check --dry-run
+python manage.py migrate
+python manage.py test main.tests_api --verbosity 2
+python manage.py test main
+node --check static/js/portfolio-api.js
+node --test tests/portfolio-api.test.cjs
+```
+
+`ProjectAPITest` mencakup 13 skenario tutorial, disesuaikan dengan model yang sudah ada. Pengujian tambahan mencakup peran Editor, API Experience, CSRF star dari kedua halaman, dan regresi halaman lama. Test halaman AJAX memeriksa kerangka HTML dan data API secara terpisah. Test Outside Work dipindahkan ke kelas tingkat modul agar benar-benar ditemukan oleh test runner.
+
+Test JavaScript menggunakan DOM/fetch tiruan untuk memeriksa escaping, URL berbahaya, payload JSON/CSRF, checkbox, respons DELETE 204, error validasi, dan kegagalan jaringan. Ini belum menggantikan pemeriksaan interaksi dan tampilan di browser nyata.
+
+Commit/push ke GitHub, deploy PWS, pengujian deployment, dan pengumpulan tautan commit ke SCELE merupakan langkah publikasi terpisah; implementasi lokal ini belum membuktikan langkah-langkah tersebut selesai.
+
+**Bantuan implementasi Tutorial 7:** Codex digunakan untuk membaca tutorial, menyesuaikan kode dengan model proyek, dan menjalankan pengujian lokal.
 
 ### Tugas 1
 
