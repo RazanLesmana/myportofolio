@@ -224,7 +224,6 @@ class ExperienceAPITest(APITestCase):
         self.assertEqual(self.experience.title, 'Changed')
 
     def test_list_star_queries_stay_constant(self):
-        # Prefetch keeps serialization independent of the number of cards.
         with self.assertNumQueries(2):
             self.client.get(self.list_url)
         for index in range(5):

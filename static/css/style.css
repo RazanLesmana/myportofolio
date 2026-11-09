@@ -1243,3 +1243,11 @@ h1, .brand {
         text-align: center;
     }
 }
+
+#category-filter { flex: 0 1 13rem; min-width: 0; }
+#experience-edit-form .form-error { display: block; margin-top: 0.35rem; }
+#experience-edit-form [aria-invalid="true"] { border-color: #b42318; }
+#experience-edit-form button:disabled { opacity: 0.65; cursor: wait; }
+@media (max-width: 600px) {
+    #category-filter { flex-basis: auto; width: 100%; }
+}

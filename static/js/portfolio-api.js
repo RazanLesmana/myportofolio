@@ -195,7 +195,6 @@
         if (button.dataset.action === 'edit') {
             button.disabled = true;
             try {
-                // Read the detail endpoint on opening so the form uses current server data.
                 const response = await fetch(endpoint(config.detail, button.dataset.id), { headers: { Accept: 'application/json' } });
                 if (!response.ok) throw new Error(`Gagal memuat experience (HTTP ${response.status}).`);
                 const item = await response.json();
