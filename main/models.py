@@ -7,7 +7,8 @@ class Experience(models.Model):
     EXPERIENCE_CHOICES = [
         ('internship', 'Internship'),
         ('organization', 'Organization'),
-        ('committee', 'Committee')
+        ('committee', 'Committee'),
+        ('volunteer', 'Volunteer'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

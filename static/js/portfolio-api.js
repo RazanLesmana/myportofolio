@@ -6,6 +6,10 @@
     const form = document.getElementById(`${config.kind}-form`);
     const owner = config.owner === 'true';
     const authenticated = config.authenticated === 'true';
+    const editForm = document.getElementById('experience-edit-form');
+    const editModal = document.getElementById('edit-experience-modal');
+    const category = document.getElementById('category-filter');
+    let editTrigger;
     let controller;
     let debounce;
 
@@ -51,7 +55,7 @@
                 <span class="experience-category">${escapeHtml(item.category_display)}</span>
                 <p>${escapeHtml(item.period)} · ${item.is_ongoing ? 'Sedang berlangsung' : 'Selesai'}</p>`;
             if (owner || config.editor === 'true') {
-                links += `<a class="button" href="${escapeHtml(endpoint(config.edit, item.id))}">Edit</a>`;
+                links += `<button type="button" class="button" data-action="edit" data-id="${escapeHtml(item.id)}">Edit</button>`;
             }
         }
         const star = authenticated
@@ -73,6 +77,7 @@
         try {
             const url = new URL(config.list, window.location.origin);
             url.searchParams.set('title', search.value.trim());
+            if (category) url.searchParams.set('category', category.value);
             const response = await fetch(url, { headers: { Accept: 'application/json' }, signal: current.signal });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const items = await response.json();
@@ -96,9 +101,76 @@
         if (!response.ok) {
             const errors = Object.entries(data).map(([key, value]) =>
                 `${key === 'detail' ? '' : `${key}: `}${Array.isArray(value) ? value.join(' ') : value}`);
-            throw new Error(errors.join(' ') || `Permintaan gagal (HTTP ${response.status}).`);
+            const error = new Error(errors.join(' ') || `Permintaan gagal (HTTP ${response.status}).`);
+            error.fields = data;
+            throw error;
         }
         return data;
+    }
+
+    function formPayload(target) {
+        const payload = {};
+        for (const input of target.elements) {
+            if (!input.name || input.name === 'csrfmiddlewaretoken' || input.disabled) continue;
+            payload[input.name] = input.type === 'checkbox' ? input.checked : input.value;
+        }
+        return payload;
+    }
+
+    function fieldErrors(errors = {}) {
+        for (const label of editForm.querySelectorAll('[data-error-for]')) {
+            const name = label.dataset.errorFor;
+            const messages = errors[name];
+            label.textContent = Array.isArray(messages) ? messages.join(' ') : (messages || '');
+            const input = editForm.elements.namedItem(name);
+            input.setAttribute('aria-invalid', messages ? 'true' : 'false');
+            input.setAttribute('aria-describedby', label.id);
+        }
+    }
+
+    function closeEdit() {
+        editModal.hidePopover();
+        if (editTrigger?.isConnected) editTrigger.focus();
+        else search.focus();
+    }
+
+    if (editForm) {
+        const save = editForm.querySelector('button[type="submit"]');
+        const cancel = document.getElementById('cancel-edit');
+        cancel.addEventListener('click', closeEdit);
+        editModal.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !save.disabled) { event.preventDefault(); closeEdit(); }
+            if (event.key === 'Tab') {
+                const controls = [...editForm.elements].filter(input => !input.disabled && input.type !== 'hidden');
+                const first = controls[0], last = controls[controls.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            }
+        });
+        editForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            if (save.disabled) return;
+            fieldErrors();
+            const payload = formPayload(editForm);
+            save.disabled = cancel.disabled = true;
+            save.textContent = 'Menyimpan...';
+            editForm.setAttribute('aria-busy', 'true');
+            try {
+                await write(endpoint(config.detail, editForm.dataset.id), 'PATCH', payload);
+                closeEdit();
+                showToast('Berhasil', 'Experience berhasil diperbarui.', 'success');
+                await fetchItems();
+                search.focus();
+            } catch (error) {
+                fieldErrors(error.fields);
+                showToast('Gagal menyimpan', error.message, 'error');
+                editForm.querySelector('[aria-invalid="true"]')?.focus();
+            } finally {
+                save.disabled = cancel.disabled = false;
+                save.textContent = 'Simpan perubahan';
+                editForm.setAttribute('aria-busy', 'false');
+            }
+        });
     }
 
     if (form) form.addEventListener('submit', async event => {
@@ -107,11 +179,7 @@
         if (button.disabled) return;
         button.disabled = true;
         try {
-            const payload = {};
-            for (const input of form.elements) {
-                if (!input.name || input.name === 'csrfmiddlewaretoken' || input.disabled) continue;
-                payload[input.name] = input.type === 'checkbox' ? input.checked : input.value;
-            }
+            const payload = formPayload(form);
             await write(config.list, 'POST', payload);
             form.reset();
             document.getElementById(`add-${config.kind}-modal`).hidePopover();
@@ -124,6 +192,27 @@
     grid.addEventListener('click', async event => {
         const button = event.target.closest('button[data-action]');
         if (!button || button.disabled) return;
+        if (button.dataset.action === 'edit') {
+            button.disabled = true;
+            try {
+                // Read the detail endpoint on opening so the form uses current server data.
+                const response = await fetch(endpoint(config.detail, button.dataset.id), { headers: { Accept: 'application/json' } });
+                if (!response.ok) throw new Error(`Gagal memuat experience (HTTP ${response.status}).`);
+                const item = await response.json();
+                fieldErrors();
+                editForm.dataset.id = item.id;
+                for (const input of editForm.elements) {
+                    if (!input.name || input.name === 'csrfmiddlewaretoken') continue;
+                    if (input.type === 'checkbox') input.checked = Boolean(item[input.name]);
+                    else input.value = item[input.name] ?? '';
+                }
+                editTrigger = button;
+                editModal.showPopover();
+                editForm.elements.namedItem('title').focus();
+            } catch (error) { showToast('Gagal membuka edit', error.message, 'error'); }
+            finally { button.disabled = false; }
+            return;
+        }
         const remove = button.dataset.action === 'delete';
         if (remove && !window.confirm('Yakin ingin menghapus data ini?')) return;
         button.disabled = true;
@@ -135,6 +224,8 @@
         finally { button.disabled = false; }
     });
 
+    document.getElementById('retry-load')?.addEventListener('click', fetchItems);
+    category?.addEventListener('change', () => { clearTimeout(debounce); fetchItems(); });
     search.addEventListener('input', () => {
         if (controller) controller.abort();
         clearTimeout(debounce);

@@ -171,6 +171,68 @@ class ExperienceAPITest(APITestCase):
             for method in ('put', 'patch', 'delete'):
                 self.assertEqual(getattr(self.client, method)(self.detail_url, {'title': 'No'}, format='json').status_code, 403)
 
+    def test_denied_writes_preserve_database(self):
+        for user in (None, self.visitor, self.editor):
+            self.client.force_authenticate(user=user)
+            before = list(Experience.objects.values())
+            operations = [('post', self.list_url), ('delete', self.detail_url)]
+            if user != self.editor:
+                operations += [('put', self.detail_url), ('patch', self.detail_url)]
+            for method, url in operations:
+                with self.subTest(user=user, method=method):
+                    self.assertEqual(getattr(self.client, method)(url, {'title': 'Forbidden'}, format='json').status_code, 403)
+                    self.assertEqual(list(Experience.objects.values()), before)
+                    self.assertEqual(self.experience.stars.count(), 0)
+
+    def test_category_filter_combines_with_title(self):
+        Experience.objects.create(title='Developer volunteer', category='volunteer')
+        response = self.client.get(self.list_url, {'title': 'developer', 'category': 'internship'})
+        self.assertEqual([item['id'] for item in response.data], [str(self.experience.pk)])
+        self.assertEqual(self.client.get(self.list_url, {'category': 'unknown'}).data, [])
+
+    def test_text_validation_and_private_fields(self):
+        self.client.force_authenticate(user=self.owner)
+        response = self.client.patch(self.detail_url, {
+            'title': '<b>Developer</b>', 'company': '<i>Company</i>',
+            'description': '<b>Work</b>', 'period': '<b>2026</b>',
+            'ended_at': '<b>November</b>', 'company_logo': '<b>logo.png</b>',
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.experience.refresh_from_db()
+        self.assertEqual(self.experience.ended_at, 'November')
+        self.assertEqual(self.experience.company_logo, 'logo.png')
+        self.assertEqual(self.experience.description, 'Work')
+        for field in ('email', 'password', 'stars', 'user'):
+            self.assertNotIn(field, response.data)
+        before = list(Experience.objects.values())
+        self.assertEqual(self.client.patch(self.detail_url, {'title': '<b></b>'}, format='json').status_code, 400)
+        self.assertEqual(list(Experience.objects.values()), before)
+
+    def test_editor_patch_requires_session_csrf(self):
+        client = APIClient(enforce_csrf_checks=True)
+        self.assertTrue(client.login(username='editor', password='test-password'))
+        self.assertEqual(client.patch(self.detail_url, {'title': 'Changed'}, format='json').status_code, 403)
+        self.experience.refresh_from_db()
+        self.assertEqual(self.experience.title, 'Developer')
+        page = client.get(reverse('main:show_experiences'))
+        self.assertContains(page, 'experience-edit-form')
+        self.assertNotContains(page, 'id="experience-form"')
+        response = client.patch(self.detail_url, {'title': 'Changed'}, format='json',
+                                HTTP_X_CSRFTOKEN=client.cookies['csrftoken'].value)
+        self.assertEqual(response.status_code, 200)
+        self.experience.refresh_from_db()
+        self.assertEqual(self.experience.title, 'Changed')
+
+    def test_list_star_queries_stay_constant(self):
+        # Prefetch keeps serialization independent of the number of cards.
+        with self.assertNumQueries(2):
+            self.client.get(self.list_url)
+        for index in range(5):
+            item = Experience.objects.create(title=f'Role {index}')
+            item.stars.add(self.visitor)
+        with self.assertNumQueries(2):
+            self.client.get(self.list_url)
+
     def test_owner_crud_validation_and_read_only_fields(self):
         self.client.force_authenticate(user=self.owner)
         for payload in ({'title': '<b></b>'}, {'title': 'New', 'category': 'invalid'}):
@@ -178,6 +240,7 @@ class ExperienceAPITest(APITestCase):
         response = self.client.post(self.list_url, {'title': '<b>New</b>', 'category': 'organization',
             'company': '<i>Company</i>', 'stars': [self.editor.pk], 'star_count': 50, 'is_ongoing': False}, format='json')
         self.assertEqual(response.status_code, 201)
+        self.assertTrue(Experience.objects.filter(pk=response.data['id'], title='New').exists())
         self.assertEqual(response.data['title'], 'New')
         self.assertEqual(response.data['company'], 'Company')
         self.assertEqual(response.data['star_count'], 0)
@@ -187,6 +250,7 @@ class ExperienceAPITest(APITestCase):
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, 204)
         self.assertEqual(response.content, b'')
+        self.assertFalse(Experience.objects.filter(pk=self.experience.pk).exists())
 
     def test_star_uses_authenticated_account(self):
         self.assertEqual(self.client.post(self.star_url).status_code, 403)

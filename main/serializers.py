@@ -10,15 +10,14 @@ class PortfolioSerializer(serializers.ModelSerializer):
     is_starred = serializers.SerializerMethodField()
     starred_by_names = serializers.SerializerMethodField()
     star_relation = "starred_by"
-    text_fields = ()
+    def validate_title(self, value):
+        value = strip_tags(value).strip()
+        if not value:
+            raise serializers.ValidationError("Judul tidak boleh kosong atau hanya berisi tag HTML.")
+        return value
 
-    def validate(self, attrs):
-        for field in self.text_fields:
-            if field in attrs:
-                attrs[field] = strip_tags(attrs[field]).strip()
-        if "title" in attrs and not attrs["title"]:
-            raise serializers.ValidationError({"title": "Judul tidak boleh kosong atau hanya berisi tag HTML."})
-        return attrs
+    def validate_description(self, value):
+        return strip_tags(value).strip()
 
     def get_star_count(self, obj):
         return getattr(obj, self.star_relation).count()
@@ -35,7 +34,12 @@ class PortfolioSerializer(serializers.ModelSerializer):
 class ProjectSerializer(PortfolioSerializer):
     project_type_display = serializers.CharField(source="get_project_type_display", read_only=True)
     image_url = serializers.SerializerMethodField()
-    text_fields = ("title", "description", "link_label", "link_2_label")
+    def validate_link_label(self, value):
+        return strip_tags(value).strip()
+
+    def validate_link_2_label(self, value):
+        return strip_tags(value).strip()
+
 
     class Meta:
         model = Project
@@ -54,7 +58,18 @@ class ExperienceSerializer(PortfolioSerializer):
     star_relation = "stars"
     category_display = serializers.CharField(source="get_category_display", read_only=True)
     is_ongoing = serializers.BooleanField(read_only=True)
-    text_fields = ("title", "company", "description", "period", "ended_at")
+    def validate_company(self, value):
+        return strip_tags(value).strip()
+
+    def validate_company_logo(self, value):
+        return strip_tags(value).strip()
+
+    def validate_period(self, value):
+        return strip_tags(value).strip()
+
+    def validate_ended_at(self, value):
+        return strip_tags(value).strip()
+
 
     class Meta:
         model = Experience

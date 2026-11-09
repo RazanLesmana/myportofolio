@@ -133,6 +133,8 @@ def show_experiences(request):
         "title_query": title_query,
         "is_editor": request.user.is_authenticated and user_is_editor(request.user),
         "form": ExperienceForm(),
+        "edit_form": ExperienceForm(auto_id="edit_%s"),
+        "categories": Experience.EXPERIENCE_CHOICES,
     }
     return render(request, "experience.html", context)
 

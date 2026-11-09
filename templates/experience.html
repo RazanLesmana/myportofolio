@@ -23,11 +23,16 @@
             <input type="search" id="search-input" name="title" value="{{ title_query }}"
                    placeholder="Cari berdasarkan jabatan" class="search-input"
                    aria-label="Cari berdasarkan jabatan">
+            <label for="category-filter">Kategori</label>
+            <select id="category-filter" class="search-input" name="category">
+                <option value="">Semua kategori</option>
+                {% for value, label in categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+            </select>
             <button type="submit" class="button">Cari</button>
         </form>
 
         <div id="loading" class="empty-state hide"><p>Memuat experiences...</p></div>
-        <div id="error" class="empty-state hide"><p>Gagal memuat data experiences. Silakan coba lagi.</p></div>
+        <div id="error" class="empty-state hide"><p>Gagal memuat data experiences.</p><button id="retry-load" type="button" class="button">Coba lagi</button></div>
         <div id="empty" class="empty-state hide"><p>Belum ada experience yang ditambahkan atau ditemukan.</p></div>
         <div id="grid" class="experience-grid hide"></div>
     </div>
@@ -37,6 +42,9 @@
     {% include "components/experience_form_modal.html" %}
 {% endif %}
 
+{% if user.is_superuser or is_editor %}
+    {% include "components/experience_edit_modal.html" %}
+{% endif %}
 {% csrf_token %}
 <div id="portfolio-api-config" hidden
      data-kind="experience"
@@ -47,7 +55,6 @@
      data-owner="{{ user.is_superuser|yesno:'true,false' }}"
      data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}"
      data-editor="{{ is_editor|yesno:'true,false' }}"
-     data-edit="{% url 'main:edit_experience' '00000000-0000-0000-0000-000000000000' %}"
 ></div>
 <script src="{% static 'js/portfolio-api.js' %}" defer></script>
 {% endblock content %}

@@ -64,6 +64,9 @@ def experience_list(request):
         title = request.query_params.get("title", "").strip()
         if title:
             objects = objects.filter(title__icontains=title)
+        category = request.query_params.get("category", "").strip()
+        if category:
+            objects = objects.filter(category=category)
         return Response(ExperienceSerializer(objects, many=True, context={"request": request}).data)
     serializer = ExperienceSerializer(data=request.data, context={"request": request})
     serializer.is_valid(raise_exception=True)
