@@ -109,6 +109,21 @@ Buka http://localhost:8000/
 - Menampilkan toast untuk hasil berhasil dan gagal, termasuk pesan validasi dari server
 - Menerapkan `escapeHtml` pada semua teks yang disisipkan lewat JavaScript dan `strip_tags` pada `clean_<field>` di `ExperienceForm`
 
+### Minggu 6
+
+- Melanjutkan Tutorial 7 dengan menerapkan Django REST Framework pada bagian Experience dari Tugas 3 sampai Tugas 5
+- Menggunakan `ExperienceSerializer` dengan daftar field eksplisit, validasi `validate_<field>` dan `strip_tags`, serta jumlah star dan status star pengguna yang bersifat read-only
+- Menggunakan endpoint daftar, detail, dan star di `/api/v1/experiences/` dengan `SessionAuthentication`
+- Mempertahankan empat peran: pengunjung dapat membaca, pengguna login dapat star/unstar, Editor dapat mengedit, dan superuser dapat menambah, mengedit, serta menghapus
+- Menghubungkan tampilan, pencarian, tambah, star, dan hapus Experience ke API tanpa reload halaman
+- Menambahkan modal edit yang mengambil detail terbaru dari API dan menyimpan perubahan lewat `PATCH`, dengan header `X-CSRFToken`
+- Menampilkan toast dan error per field; input edit tetap tersimpan di form jika request gagal, serta tombol simpan dinonaktifkan selama request berlangsung
+- Menambahkan filter kategori yang bisa digabung dengan pencarian jabatan, serta tombol Coba lagi ketika daftar gagal dimuat
+- Menambahkan pilihan Volunteer agar default kategori yang sudah ada tetap valid, tanpa mengubah kategori data lama
+- Mempertahankan escaping teks pada kartu dan memakai `prefetch_related` untuk relasi star agar jumlah query tidak bertambah mengikuti jumlah kartu
+- Melengkapi test empat peran, isi database setelah permintaan ditolak, validasi input, star, CSRF session, filter kategori, serta alur edit JavaScript
+- Hasil pengujian implementasi lokal: 38 test Django dan 9 test JavaScript lulus; test JavaScript memakai DOM/fetch tiruan sehingga pemeriksaan tampilan di browser tetap diperlukan
+
 ## Pertanyaan Reflektif
 
 ### Tutorial 7 — Django REST Framework
@@ -214,6 +229,17 @@ jadi, harus di-serialize dulu karena object Django adalah object Python yang tid
 - Template Django otomatis nge-escape `{{ variabel }}`, jadi tag HTML tampil sebagai teks biasa.
 - Lewat AJAX, data JSON dimasukin ke HTML pakai `innerHTML` tanpa escape otomatis, jadi browser bisa ngejalanin tag seperti `<img onerror="...">`.
 - Solusinya: `escapeHtml` di JavaScript + `strip_tags` di `clean_<field>` pada form.
+
+### Tugas 6
+
+**1.** REST adalah gaya arsitektur API berbasis resource, dengan antarmuka konsisten dan request stateless. JSON hanya format data; method HTTP dan cara mengakses resource juga harus sesuai. Contohnya, GET tidak boleh dipakai untuk menghapus data. PUT mengganti representasi lengkap, misalnya seluruh data Experience, sedangkan PATCH mengubah sebagian field, misalnya hanya jabatan.
+
+**2.** Serializer mengubah data model menjadi representasi yang bisa dirender sebagai JSON, memvalidasi input, dan membantu create/update. Dibanding dictionary manual dengan `JsonResponse`, pemetaan field dan validasi lebih terpusat serta konsisten. Pada Experience, serializer juga menyediakan `star_count` dan `is_starred` sebagai field read-only.
+
+**3.** Autentikasi menentukan siapa pengguna, sedangkan otorisasi menentukan tindakan yang diizinkan. Session mengenali akun, lalu permission class membatasi akses: Editor boleh edit, tetapi hanya superuser yang boleh tambah/hapus. Pemeriksaan harus di server karena tombol yang disembunyikan tidak mencegah pengguna mengirim request langsung.
+
+**4.** Cookie session dikirim otomatis oleh browser, sehingga bisa dimanfaatkan untuk request palsu dari situs lain. Karena itu, request perubahan data tetap membutuhkan token CSRF lewat `X-CSRFToken`. `force_authenticate` melewati autentikasi normal, jadi tidak membuktikan CSRF bekerja. Pengujiannya memakai `APIClient(enforce_csrf_checks=True)` dan `.login()`, lalu memastikan request tanpa token ditolak.
+
 ---
 
 ## AI Disclosure
@@ -222,23 +248,16 @@ Saya menggunakan AI untuk membantu memahami struktur kode Django dan syntax untu
 
 **Tools yang digunakan:** Claude
 
-## AI Disclosure
-
-Saya menggunakan AI untuk memahami alur AJAX, debouncing, modal, dan perlindungan XSS, lalu menerapkannya ke halaman Experience. Sebagian kode template dan JavaScript saya salin dari AI karena waktu mendekati tenggat, dan akan saya kerjakan ulang sendiri sebagai persiapan kuis.
-
-**Tools yang digunakan:** Claude
-
 ### Strategi prompting
 
-- Mengunggah PDF Tutorial 5 dan Tugas 5, lalu meminta penjelasan alur besar dulu (browser ↔ server) sebelum masuk kode.
+- Mengunggah PDF Tutorial 7 dan Tugas 6, lalu meminta penjelasan alur besar dulu (browser ↔ server) sebelum masuk kode.
 - Meminta halaman belajar interaktif: tiap bagian berisi penjelasan cara kerja dan hubungan antarfile, pertanyaan yang harus saya jawab sendiri, baru kunci jawaban dan kode terbuka.
 - Mengirim isi `main/views.py`, `main/models.py`, `main/forms.py`, dan template saya supaya kode disesuaikan dengan proyek saya, bukan contoh tutorial.
 - Mengecek tiap perubahan dengan `python manage.py runserver` dan mengirim pesan error ke AI saat gagal.
 
 ### Batasan AI
 
-1. **AI tidak tahu ketergantungan di kode saya.** `show_experiences` lama memanggil `get_experiences_json` lalu melakukan deserialisasi, sehingga perubahan format JSON akan membuat halaman crash. Ini baru ketahuan setelah saya mengirim isi `main/views.py`.
-2. **Kode yang benar tetap bisa salah saat ditempel.** Saya sempat menaruh method `clean_*` di `main/models.py` (seharusnya di `main/forms.py`) dan membuat `return` masuk ke dalam loop di `get_experiences_json`. Keduanya saya perbaiki manual setelah melihat warning editor dan error server.
+1. **Verifikasi AI belum mencakup semuanya.** AI sempat mengecek `/experience/` sehingga mendapat 404; URL yang benar adalah `/experiences/`. Test otomatis lulus, tetapi tampilan dan interaksi di browser nyata belum diuji, sehingga hasilnya tetap perlu diperiksa manual.
 
 ### Link prompt
 
